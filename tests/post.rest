@@ -1,0 +1,44 @@
+GET http://localhost:4001/persons
+
+###########################
+POST http://localhost:4001/addPerson
+Content-Type: application/json
+
+{
+  "name": "testuser1",
+  "password": "password123",
+  "currRoom": ""
+}
+
+################################
+PUT http://localhost:4001/updateCurrRoom/testuser1
+Content-Type: application/json
+
+{
+  "currRoom": "New Room ID"
+}
+
+###################################
+POST http://localhost:4001/addRoom
+Content-Type: application/json
+
+{
+  "roomname": "Test Room1",
+  "owner": "testuser1"
+}
+
+##########################
+POST http://localhost:4001/addChatToRoom/65c51d497de8ca3b2ce2d9e7
+Content-Type: application/json
+
+{
+  "chat": "Hello, everyone!"
+}
+
+#######################
+DELETE http://localhost:4001/removePersonFromRoom/<roomId>
+Content-Type: application/json
+
+{
+  "personName": "Person to remove"
+}

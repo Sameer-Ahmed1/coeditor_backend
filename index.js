@@ -2,42 +2,43 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
+const mongoose = require('mongoose');
+
+const socketHandler = require('./Services/socketHandler');
+const personRoutes = require('./Services/personRoutes');
+const roomRoutes = require('./Services/roomRoutes');
+const authenticationRoutes = require('./Services/authenticationRoutes');
+const fileRoutes = require('./Services/fileRoutes');
+const PersonsRooms = require('./Services/schema');
+
+mongoose.connect('mongodb+srv://shivarama635:gxkgy87EXKwkhjjn@cluster0.gqpduvy.mongodb.net/?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // Middleware to parse JSON bodies
 
 const server = http.createServer(app);
-
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("New client connected");
-  socket.on("join", (roomId) => {
-    socket.join(roomId);
-    console.log(`Client joined room ${roomId}`);
-  });
-  socket.on("leave", (roomId) => {
-    socket.leave(roomId);
-    console.log(`Client left room ${roomId}`);
-  });
+socketHandler(io, PersonsRooms);
 
-  socket.on("code", (roomId, newCode) => {
-    socket.to(roomId).emit("code", newCode);
-  });
-  socket.on("code", ({ roomId, fileName, newCode }) => {
-    console.log(`fileName: ${fileName}, newCode: ${newCode}`);
-    io.to(roomId).emit("code", { fileName, newCode });
-  });
+// Use person routes
+app.use(personRoutes);
 
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
+// Use room routes
+app.use(roomRoutes);
+app.use(authenticationRoutes);
+app.use(fileRoutes);
+
+const port = 4001;
+server.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });
-
-const port = process.env.PORT || 4001;
-server.listen(port, () => console.log(`Listening on port ${port}`));

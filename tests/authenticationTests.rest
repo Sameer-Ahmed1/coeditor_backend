@@ -1,0 +1,46 @@
+# POST request to authenticate user login
+POST http://localhost:4001/login
+Content-Type: application/json
+
+{
+  "name": "testuser",
+  "password": "testpassword"
+}
+
+###
+POST http://localhost:4001/login
+Content-Type: application/json
+
+{
+  "name": "testuser",
+  "password": "password123"
+}
+
+
+############################
+# POST request to check if room join is valid
+POST http://localhost:4001/checkRoomJoin
+Content-Type: application/json
+
+{
+  "roomId": "65c51d497de8ca3b2ce2d9e7",
+  "joinLink": "validJoinLink"
+}
+
+###
+POST http://localhost:4001/checkRoomJoin
+Content-Type: application/json
+
+{
+  "roomId": "65c51d497de8ca3b2ce2d9e6",
+  "joinLink": "validJoinLink"
+}
+
+###
+POST http://localhost:4001/checkRoomJoin
+Content-Type: application/json
+
+{
+  "roomId": "65c51d497de8ca3b2ce2d9e7",
+  "joinLink": "joinhere@p13wMOt1"
+}
