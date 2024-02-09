@@ -4,6 +4,7 @@ const userRouter = require("express").Router();
 userRouter.get("/", async (request, response, next) => {
   try {
     const users = await User.find({});
+    console.log(users);
     response.json(users);
   } catch (error) {
     next(error);

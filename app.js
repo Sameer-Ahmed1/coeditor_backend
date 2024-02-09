@@ -6,6 +6,7 @@ const middleware = require("./utils/middleware.js");
 const config = require("./utils/config");
 const mongoose = require("mongoose");
 const userRouter = require("./controllers/users.js");
+const roomRouter = require("./controllers/room.js");
 mongoose.set("strictQuery", false);
 
 const url = config.MONGODB_URI;
@@ -26,6 +27,7 @@ app.use(middleware.tokenExtractor);
 
 app.use("/api/login", loginRouter);
 app.use("/api/users", userRouter);
+app.use("/api/room", roomRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
