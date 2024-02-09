@@ -9,10 +9,7 @@ const userSchema = new mongoose.Schema({
   },
   name: String,
   passwordHash: String,
-  rooms: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Room",
-  },
+  rooms: String,
 });
 userSchema.plugin(uniqueValidator);
 

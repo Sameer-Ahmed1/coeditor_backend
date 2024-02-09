@@ -20,7 +20,7 @@ io.on("connection", (socket) => {
       const room = new Room({ roomId, users: [userId] });
       await room.save();
       const user = await User.findById(userId);
-      user.rooms = room._id;
+      user.rooms = roomId;
       await user.save();
       console.log(`Room ${roomId} created`);
     } catch (error) {
@@ -37,9 +37,25 @@ io.on("connection", (socket) => {
       await room.save();
       const user = await User.findById(userId);
       console.log("room id", room._id);
-      user.rooms = room._id;
+      user.rooms = roomId;
       await user.save();
       console.log(`User ${userId} joined room ${roomId}`);
+    } catch (error) {
+      console.log(error);
+      socket.emit("error", error.message);
+    }
+  });
+  socket.on("message", async (roomId, username, message) => {
+    try {
+      // const room = await Room.findOne({ roomId });
+      // room.messages.push({ user: userId, message, timestamp: new Date() });
+      // await room.save();
+      io.to(roomId).emit("message", {
+        username: username,
+        message,
+        timestamp: new Date(),
+      });
+      console.log(`User ${username} sent message to room ${roomId}`);
     } catch (error) {
       console.log(error);
       socket.emit("error", error.message);

@@ -9,7 +9,16 @@ const roomSchema = new mongoose.Schema({
       ref: "Room",
     },
   ], // Array of user IDs
-  // Add other properties as needed
+  messages: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      message: String,
+      timestamp: Date,
+    },
+  ],
 });
 roomSchema.set("toJSON", {
   transform: (document, returnedObject) => {
