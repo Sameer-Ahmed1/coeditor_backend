@@ -20,9 +20,9 @@ io.on("connection", (socket) => {
       const room = new Room({ roomId, users: [userId] });
       await room.save();
       const user = await User.findById(userId);
-      user.rooms = roomId;
+      user.rooms = room._id; // Refer to the room by its ID
       await user.save();
-      console.log(`Room ${roomId} created`);
+      console.log(`Room ${roomId} created by user ${userId}`);
     } catch (error) {
       console.log(error);
       socket.emit("error", error.message);
@@ -36,8 +36,7 @@ io.on("connection", (socket) => {
       room.users.push(userId);
       await room.save();
       const user = await User.findById(userId);
-      console.log("room id", room._id);
-      user.rooms = roomId;
+      user.rooms = room._id; // Refer to the room by its ID
       await user.save();
       console.log(`User ${userId} joined room ${roomId}`);
     } catch (error) {
@@ -45,17 +44,18 @@ io.on("connection", (socket) => {
       socket.emit("error", error.message);
     }
   });
-  socket.on("message", async (roomId, username, message) => {
+
+  socket.on("message", async (roomId, userId, message) => {
     try {
-      // const room = await Room.findOne({ roomId });
-      // room.messages.push({ user: userId, message, timestamp: new Date() });
-      // await room.save();
+      const room = await Room.findOne({ roomId });
+      room.messages.push({ user: userId, message, timestamp: new Date() });
+      await room.save();
       io.to(roomId).emit("message", {
-        username: username,
+        user: userId,
         message,
         timestamp: new Date(),
       });
-      console.log(`User ${username} sent message to room ${roomId}`);
+      console.log(`User ${userId} sent message to room ${roomId}`);
     } catch (error) {
       console.log(error);
       socket.emit("error", error.message);
@@ -66,10 +66,10 @@ io.on("connection", (socket) => {
     try {
       socket.leave(roomId);
       const room = await Room.findOne({ roomId });
-      room.users = room.users.filter((id) => id !== userId);
+      room.users = room.users.filter((user) => user._id.toString() !== userId);
       await room.save();
       const user = await User.findById(userId);
-      user.rooms = null;
+      user.rooms = null; // Remove the reference to the room
       await user.save();
       console.log(`User ${userId} left room ${roomId}`);
     } catch (error) {
@@ -78,9 +78,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("code", (roomId, newCode) => {
-    socket.to(roomId).emit("code", newCode);
-  });
   socket.on("code", ({ roomId, fileName, newCode }) => {
     console.log(`fileName: ${fileName}, newCode: ${newCode}`);
     io.to(roomId).emit("code", { fileName, newCode });

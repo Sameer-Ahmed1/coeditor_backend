@@ -4,7 +4,8 @@ const Room = require("../models/room");
 
 roomRouter.get("/:id", async (req, res) => {
   try {
-    const room = await Room.findById(req.params.id).populate("users");
+    const room = await Room.findById(req.params.id);
+    console.log("room fetched ", room);
     if (room) {
       res.json(room);
     } else {
@@ -17,7 +18,7 @@ roomRouter.get("/:id", async (req, res) => {
 });
 roomRouter.get("/", async (req, res) => {
   try {
-    const rooms = await Room.find({}).populate("users");
+    const rooms = await Room.find({});
     res.json(rooms);
   } catch (error) {
     console.error(error);
