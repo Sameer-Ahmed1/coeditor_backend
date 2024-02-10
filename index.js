@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("message", async (roomId, userId, message) => {
+  socket.on("message", async (roomId, userId, message, username) => {
     try {
       const room = await Room.findOne({ roomId });
       room.messages.push({ user: userId, message, timestamp: new Date() });
@@ -54,6 +54,7 @@ io.on("connection", (socket) => {
         user: userId,
         message,
         timestamp: new Date(),
+        username: username,
       });
       console.log(`User ${userId} sent message to room ${roomId}`);
     } catch (error) {
